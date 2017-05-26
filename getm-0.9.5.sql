@@ -49,7 +49,7 @@ CREATE TABLE getm_admin.tm_prime
   c_date timestamp,
   circ_er numeric(38,3),
   lin_er numeric(38,3),
-  producer producer smallint,
+  producer smallint,
   shape geometry NOT NULL,
   analyst character varying(128),
   qc character varying(128),
@@ -111,9 +111,9 @@ GRANT SELECT ON TABLE getm_admin.tm_release TO getm_ro;
 ################################################################################
 CREATE TABLE getm_admin.tm_prime_history
 (
-  hid serial NOT NULL;
-  created timestamp NOT NULL;
-  deleted timestamp;
+  hid serial NOT NULL,
+  created timestamp NOT NULL,
+  deleted timestamp,
   objectid integer,
   benumber character varying(10),
   osuffix character varying(5),
@@ -180,7 +180,7 @@ $BODY$
     RETURN NULL;
   END;
 $BODY$
-  LANGUAGE plsql VOLATILE
+  LANGUAGE plpgsql VOLATILE
   COST 100;
 ALTER FUNCTION getm_admin.tm_prime_delete()
   OWNER TO getm_admin;
@@ -200,11 +200,11 @@ $BODY$
        NEW.c_pvchar, NEW.analyst, NEW.qc, NEW.class, NEW.release, NEW.control, NEW.class_by, 
        NEW.drv_from, NEW.c_reason, NEW.decl_on, NEW.source, NEW.c_method, NEW.c_date, NEW.circ_er, 
        NEW.lin_er, NEW.producer, NEW.tgt_coor, NEW.tgt_name, NEW.catcode, NEW.country, NEW.doi, 
-       NEW.tot, NEW.d_state, NEW.shape)
+       NEW.tot, NEW.d_state, NEW.shape);
     RETURN NEW;
   END;
 $BODY$
-  LANGUAGE plsql VOLATILE
+  LANGUAGE plpgsql VOLATILE
   COST 100;
 ALTER FUNCTION getm_admin.tm_prime_insert()
   OWNER TO getm_admin;
@@ -227,11 +227,11 @@ $BODY$
        NEW.c_pvchar, NEW.analyst, NEW.qc, NEW.class, NEW.release, NEW.control, NEW.class_by, 
        NEW.drv_from, NEW.c_reason, NEW.decl_on, NEW.source, NEW.c_method, NEW.c_date, NEW.circ_er, 
        NEW.lin_er, NEW.producer, NEW.tgt_coor, NEW.tgt_name, NEW.catcode, NEW.country, NEW.doi, 
-       NEW.tot, NEW.d_state, NEW.shape)
+       NEW.tot, NEW.d_state, NEW.shape);
     RETURN NEW;
   END;
 $BODY$
-  LANGUAGE plsql VOLATILE
+  LANGUAGE plpgsql VOLATILE
   COST 100;
 ALTER FUNCTION getm_admin.tm_prime_update()
   OWNER TO getm_admin;
