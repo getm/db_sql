@@ -258,3 +258,76 @@ CREATE TRIGGER tm_prime_update_trigger
   FOR EACH ROW
   EXECUTE PROCEDURE getm_admin.tm_prime_update();
   
+################################################################################
+# Create SQL views
+################################################################################
+CREATE OR REPLACE VIEW getm_admin.tm_pub AS
+  SELECT tm_prime.shape::geometry(Geometry,4326) AS geom, tm_prime.benumber, 
+      tm_prime.objectid, tm_prime.osuffix, tm_prime.icod, tm_prime.label, 
+      tm_prime.feat_name, tm_prime.out_ty, tm_prime.chng_req, tm_prime.notional, 
+      tm_prime.conf_lvl, tm_prime.ce_l, tm_prime.ce_w, tm_prime.ce_h, tm_prime.c_pvchar, 
+      tm_prime.analyst, tm_prime.qc, tm_prime.class, tm_prime.release, tm_prime.control, 
+      tm_prime.class_by, tm_prime.drv_from, tm_prime.c_reason, tm_prime.decl_on,
+      tm_prime.source, tm_prime.c_method, tm_prime.c_date, tm_prime.circ_er, 
+      tm_prime.lin_er, tm_prime.producer, tm_prime.tgt_coor, tm_prime.tgt_name,
+      tm_prime.catcode, tm_prime.country, tm_prime.doi, tm_prime.tot, tm_prime.d_state
+    FROM getm_admin.tm_prime, getm_admin.tm_release, getm_admin.tm_prod
+  WHERE tm_prime.release::text = tm_release.code AND tm_prime.producer = tm_prod.code;
+ALTER TABLE getm_admin.tm_pub
+  OWNER TO getm_admin;
+GRANT ALL ON TABLE getm_admin.tm_pub TO getm_admin;
+GRANT SELECT ON TABLE getm_admin.tm_pub TO getm_ro;
+
+CREATE OR REPLACE VIEW getm_admin.tm_pub_collateral AS
+  SELECT *
+    FROM getm_admin.tm_pub
+  WHERE tm_pub.out_ty::text ~~ '%Collateral%'::text;
+ALTER TABLE getm_admin.tm_pub_collateral
+  OWNER TO getm_admin;
+GRANT ALL ON TABLE getm_admin.tm_pub_collateral TO getm_admin;
+GRANT SELECT ON TABLE getm_admin.tm_pub_collateral TO getm_ro;
+  
+CREATE OR REPLACE VIEW getm_admin.tm_pub_critical AS
+  SELECT *
+    FROM getm_admin.tm_pub
+  WHERE tm_pub.out_ty::text ~~ '%Critical%'::text;
+ALTER TABLE getm_admin.tm_pub_critical
+  OWNER TO getm_admin;
+GRANT ALL ON TABLE getm_admin.tm_pub_critical TO getm_admin;
+GRANT SELECT ON TABLE getm_admin.tm_pub_critical TO getm_ro;
+  
+CREATE OR REPLACE VIEW getm_admin.tm_pub_facility AS
+  SELECT *
+    FROM getm_admin.tm_pub
+  WHERE tm_pub.out_ty::text ~~ '%Facility%'::text;
+ALTER TABLE getm_admin.tm_pub_facility
+  OWNER TO getm_admin;
+GRANT ALL ON TABLE getm_admin.tm_pub_facility TO getm_admin;
+GRANT SELECT ON TABLE getm_admin.tm_pub_facility TO getm_ro;
+
+CREATE OR REPLACE VIEW getm_admin.tm_pub_functional AS
+  SELECT *
+    FROM getm_admin.tm_pub
+  WHERE tm_pub.out_ty::text ~~ '%Functional%'::text;
+ALTER TABLE getm_admin.tm_pub_functional
+  OWNER TO getm_admin;
+GRANT ALL ON TABLE getm_admin.tm_pub_functional TO getm_admin;
+GRANT SELECT ON TABLE getm_admin.tm_pub_functional TO getm_ro;
+
+CREATE OR REPLACE VIEW getm_admin.tm_pub_installation AS
+  SELECT *
+    FROM getm_admin.tm_pub
+  WHERE tm_pub.out_ty::text ~~ '%Installation%'::text;
+ALTER TABLE getm_admin.tm_pub_installation
+  OWNER TO getm_admin;
+GRANT ALL ON TABLE getm_admin.tm_pub_installation TO getm_admin;
+GRANT SELECT ON TABLE getm_admin.tm_pub_installation TO getm_ro;
+
+CREATE OR REPLACE VIEW getm_admin.tm_pub_poi AS
+  SELECT *
+    FROM getm_admin.tm_pub
+  WHERE tm_pub.out_ty::text ~~ '%POI%'::text;
+ALTER TABLE getm_admin.tm_pub_poi
+  OWNER TO getm_admin;
+GRANT ALL ON TABLE getm_admin.tm_pub_poi TO getm_admin;
+GRANT SELECT ON TABLE getm_admin.tm_pub_poi TO getm_ro;
