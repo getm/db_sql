@@ -36,7 +36,7 @@ CREATE TABLE getm_admin.tm_prime
   c_pvchar character varying(20),
   conf_lvl character varying(24),
   icod timestamp,
-  d_dtate smallint,
+  d_state smallint,
   class character varying(15),
   release character varying(1),
   control character varying(32),
@@ -132,7 +132,7 @@ CREATE TABLE getm_admin.tm_prime_history
   c_pvchar character varying(20),
   conf_lvl character varying(24),
   icod timestamp,
-  d_dtate smallint,
+  d_state smallint,
   class character varying(15),
   release character varying(1),
   control character varying(32),
@@ -145,7 +145,7 @@ CREATE TABLE getm_admin.tm_prime_history
   c_date timestamp,
   circ_er numeric(38,3),
   lin_er numeric(38,3),
-  producer producer smallint,
+  producer smallint,
   shape geometry NOT NULL,
   analyst character varying(128),
   qc character varying(128),
@@ -165,3 +165,96 @@ GRANT SELECT ON TABLE getm_admin.tm_prime_history TO getm_ro;
 
 CREATE INDEX idx_tm_prime_history
   ON getm_admin.tm_prime_history USING gist(shape);
+
+################################################################################
+# Create history functions 
+################################################################################
+
+CREATE OR REPLACE FUNCTION getm_admin.tm_prime_delete()
+  RETURNS trigger AS
+$BODY$
+  BEGIN
+    UPDATE getm_admin.tm_history
+      SET deleted = current_timestamp
+      WHERE deleted IS NULL and objectid = OLD.objectid;
+    RETURN NULL;
+  END;
+$BODY$
+  LANGUAGE plsql VOLATILE
+  COST 100;
+ALTER FUNCTION getm_admin.tm_prime_delete()
+  OWNER TO getm_admin;
+  
+CREATE OR REPLACE FUNCTION getm_admin.tm_prime_insert()
+  RETURNS trigger AS
+$BODY$
+  BEGIN
+    INSERT INTO getm_admin.tm_prime_history
+      (created,objectid,benumber,osuffix,icod,label,feat_name,out_ty,chng_req,notional,
+       conf_lvl,ce_l,ce_w,ce_h,c_pvchar,analyst,qc,class,release,control,class_by,drv_from,
+       c_reason,decl_on,source,c_method,c_date,circ_er,lin_er,producer,tgt_coor,tgt_name,
+       catcode,country,doi,tot,d_state,shape)
+    VALUES
+      (now(), NEW.objectid, NEW.benumber, NEW.osuffix, NEW.icod, NEW.label, NEW.feat_name, 
+       NEW.out_ty, NEW.chng_req, NEW.notional, NEW.conf_lvl, NEW.ce_l, NEW.ce_w, NEW.ce_h, 
+       NEW.c_pvchar, NEW.analyst, NEW.qc, NEW.class, NEW.release, NEW.control, NEW.class_by, 
+       NEW.drv_from, NEW.c_reason, NEW.decl_on, NEW.source, NEW.c_method, NEW.c_date, NEW.circ_er, 
+       NEW.lin_er, NEW.producer, NEW.tgt_coor, NEW.tgt_name, NEW.catcode, NEW.country, NEW.doi, 
+       NEW.tot, NEW.d_state, NEW.shape)
+    RETURN NEW;
+  END;
+$BODY$
+  LANGUAGE plsql VOLATILE
+  COST 100;
+ALTER FUNCTION getm_admin.tm_prime_insert()
+  OWNER TO getm_admin;
+  
+CREATE OR REPLACE FUNCTION getm_admin.tm_prime_update()
+  RETURNS trigger AS
+$BODY$
+  BEGIN
+    UPDATE getm_admin.tm_history
+      SET deleted = current_timestamp
+      WHERE deleted IS NULL and objectid = OLD.objectid;
+    INSERT INTO getm_admin.tm_prime_history
+      (created,objectid,benumber,osuffix,icod,label,feat_name,out_ty,chng_req,notional,
+       conf_lvl,ce_l,ce_w,ce_h,c_pvchar,analyst,qc,class,release,control,class_by,drv_from,
+       c_reason,decl_on,source,c_method,c_date,circ_er,lin_er,producer,tgt_coor,tgt_name,
+       catcode,country,doi,tot,d_state,shape)
+    VALUES
+      (now(), NEW.objectid, NEW.benumber, NEW.osuffix, NEW.icod, NEW.label, NEW.feat_name, 
+       NEW.out_ty, NEW.chng_req, NEW.notional, NEW.conf_lvl, NEW.ce_l, NEW.ce_w, NEW.ce_h, 
+       NEW.c_pvchar, NEW.analyst, NEW.qc, NEW.class, NEW.release, NEW.control, NEW.class_by, 
+       NEW.drv_from, NEW.c_reason, NEW.decl_on, NEW.source, NEW.c_method, NEW.c_date, NEW.circ_er, 
+       NEW.lin_er, NEW.producer, NEW.tgt_coor, NEW.tgt_name, NEW.catcode, NEW.country, NEW.doi, 
+       NEW.tot, NEW.d_state, NEW.shape)
+    RETURN NEW;
+  END;
+$BODY$
+  LANGUAGE plsql VOLATILE
+  COST 100;
+ALTER FUNCTION getm_admin.tm_prime_update()
+  OWNER TO getm_admin;
+  
+################################################################################
+# Create history triggers 
+################################################################################
+
+CREATE TRIGGER tm_prime_delete_trigger
+  AFTER DELETE
+  ON getm_admin.tm_prime
+  FOR EACH ROW
+  EXECUTE PROCEDURE getm_admin.tm_prime_delete();
+  
+CREATE TRIGGER tm_prime_insert_trigger
+  AFTER INSERT
+  ON getm_admin.tm_prime
+  FOR EACH ROW
+  EXECUTE PROCEDURE getm_admin.tm_prime_insert();
+  
+CREATE TRIGGER tm_prime_update_trigger
+  AFTER UPDATE
+  ON getm_admin.tm_prime
+  FOR EACH ROW
+  EXECUTE PROCEDURE getm_admin.tm_prime_update();
+  
