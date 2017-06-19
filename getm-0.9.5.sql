@@ -174,7 +174,7 @@ CREATE OR REPLACE FUNCTION getm_admin.tm_prime_delete()
   RETURNS trigger AS
 $BODY$
   BEGIN
-    UPDATE getm_admin.tm_history
+    UPDATE getm_admin.tm_prime_history
       SET deleted = current_timestamp
       WHERE deleted IS NULL and objectid = OLD.objectid;
     RETURN NULL;
@@ -213,7 +213,7 @@ CREATE OR REPLACE FUNCTION getm_admin.tm_prime_update()
   RETURNS trigger AS
 $BODY$
   BEGIN
-    UPDATE getm_admin.tm_history
+    UPDATE getm_admin.tm_prime_history
       SET deleted = current_timestamp
       WHERE deleted IS NULL and objectid = OLD.objectid;
     INSERT INTO getm_admin.tm_prime_history
