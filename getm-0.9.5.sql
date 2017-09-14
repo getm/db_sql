@@ -1,9 +1,3 @@
-################################################################################
-# Create users and schema with proper permisions
-################################################################################
-getm_admin
-getm_ro # read only access
-
 CREATE SCHEMA getm_admin
   AUTHORIZATION getm_admin;
   
